@@ -7,3 +7,4 @@ TODO:
 5. add CI
 6. add Code Coverage
 7. release version 0.1.0
+8. update README.md
