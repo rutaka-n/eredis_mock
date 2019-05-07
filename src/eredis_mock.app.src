@@ -1,5 +1,5 @@
 {application, eredis_mock,
- [{description, "An OTP library"},
+ [{description, "Library for mocking eredis requests in tests"},
   {vsn, "0.1.0"},
   {registered, []},
   {applications,
@@ -7,8 +7,8 @@
     stdlib
    ]},
   {env,[]},
-  {modules, []},
+  {modules, [eredis_mock]},
 
   {licenses, ["Apache 2.0"]},
-  {links, []}
+  {links, [{"Github", "https://github.com/rutaka-n/eredis_mock"}]}
  ]}.
