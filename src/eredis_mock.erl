@@ -47,7 +47,7 @@ handle_cast({request, Request, Pid}, #st{mocks = Mocks} = State) ->
     Reply = maps:get(Request, Mocks, {ok, <<"OK">>}),
     safe_send(Pid, {response, Reply}),
     {noreply, State};
-handle_cast({request, Request}, State) ->
+handle_cast({request, _Request}, State) ->
     {noreply, State};
 handle_cast({set_mock, Request, Response}, #st{mocks = Mocks}) ->
     Bulk = eredis:create_multibulk(Request),
