@@ -38,9 +38,17 @@ init([]) ->
 
 handle_call({request, Request}, _From, #st{mocks = Mocks} = State) ->
     {reply, maps:get(Request, Mocks, {ok, <<"OK">>}), State};
+handle_call({pipeline, Requests}, _From, #st{mocks = Mocks} = State) ->
+    {reply, [maps:get(Request, Mocks, {ok, <<"OK">>}) || Request <- Requests], State};
 handle_call(_Msg, _From, State) ->
     {reply, {ok, <<"OK">>}, State}.
 
+handle_cast({request, Request, Pid}, #st{mocks = Mocks} = State) ->
+    Reply = maps:get(Request, Mocks, {ok, <<"OK">>}),
+    safe_send(Pid, {response, Reply}),
+    {noreply, State};
+handle_cast({request, Request}, State) ->
+    {noreply, State};
 handle_cast({set_mock, Request, Response}, #st{mocks = Mocks}) ->
     Bulk = eredis:create_multibulk(Request),
     {noreply, #st{mocks = maps:put(Bulk, Response, Mocks)}};
@@ -61,3 +69,10 @@ terminate(Reason, _State) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
+
+safe_send(Pid, Value) ->
+    try erlang:send(Pid, Value)
+    catch
+        Err:Reason ->
+            error_logger:info_msg("eredis_mock: Failed to send message to ~p with reason ~p~n", [Pid, {Err, Reason}])
+    end.
